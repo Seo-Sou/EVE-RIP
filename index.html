@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EVE Online Selector</title>
+    <title>Selector de EVE Online</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -49,14 +49,33 @@
     </style>
 </head>
 <body>
-    <h1>Selector de EVE Online</h1>
-    <button onclick="generarSeleccion()">Elige destino</button>
+    <h1 data-es="Selector de EVE Online" data-en="EVE Online Selector">Selector de EVE Online</h1>
+    <button onclick="generarSeleccion()" data-es="Generar Selección" data-en="Generate Selection">Generar Selección</button>
     <div id="result"></div>
     <div id="story-container">
         <div id="story"></div>
     </div>
 
     <script>
+        const translations = {
+            'es': {
+                'Facción': 'Facción',
+                'Nombre': 'Nombre',
+                'Nave': 'Nave',
+                'Estilo de Juego': 'Estilo de Juego',
+                'Historia del Personaje': 'Historia del Personaje',
+                // ... puedes agregar más traducciones según sea necesario
+            },
+            'en': {
+                'Facción': 'Faction',
+                'Nombre': 'Name',
+                'Nave': 'Ship',
+                'Estilo de Juego': 'Playstyle',
+                'Historia del Personaje': 'Character Story',
+                // ... puedes agregar más traducciones según sea necesario
+            }
+        };
+
         const facciones = ['Amarr', 'Caldari', 'Gallente', 'Minmatar'];
         const nombres = ['jeremy', 'amarr', 'laurean', 'Delta', 'lizzy', 'homer', 'akshan', 'boris', 'gian', 'morty', 'slate', 'murphy', 'salasar'];
         const navesCaldari = ['Cormorant', 'Caracal', 'Raven', 'Rokh'];
@@ -81,7 +100,7 @@
             const naveAleatoria = obtenerNaveAleatoria(faccionAleatoria);
             const estiloJuegoAleatorio = obtenerElementoAleatorio(estilosJuego);
 
-            const resultado = `Facción: ${faccionAleatoria}<br>Nombre: ${nombreAleatorio}<br>Nave: ${naveAleatoria}<br>Estilo de Juego: ${estiloJuegoAleatorio}`;
+            const resultado = `${translations[getLanguage()]['Facción']}: ${faccionAleatoria}<br>${translations[getLanguage()]['Nombre']}: ${nombreAleatorio}<br>${translations[getLanguage()]['Nave']}: ${naveAleatoria}<br>${translations[getLanguage()]['Estilo de Juego']}: ${estiloJuegoAleatorio}`;
             const historia = generarHistoria(faccionAleatoria, nombreAleatorio, naveAleatoria, estiloJuegoAleatorio);
 
             // Guardar la última selección en localStorage
@@ -96,7 +115,7 @@
             document.body.className = faccionAleatoria.toLowerCase();
 
             document.getElementById('result').innerHTML = resultado;
-            document.getElementById('story').innerHTML = `<h3>Historia del Personaje</h3>${historia}`;
+            document.getElementById('story').innerHTML = `<h3>${translations[getLanguage()]['Historia del Personaje']}</h3>${historia}`;
         }
 
         function generarNombreAleatorio() {
@@ -133,15 +152,21 @@
             return array[indiceAleatorio];
         }
 
+        function getLanguage() {
+            // Determina el idioma actual del navegador o cualquier lógica que prefieras
+            // En este ejemplo, se usa 'es' (español) como idioma predeterminado
+            return navigator.language.startsWith('es') ? 'es' : 'en';
+        }
+
         // Recuperar la última selección al cargar la página
         window.onload = function () {
             const ultimaSeleccion = localStorage.getItem('ultimaSeleccion');
             if (ultimaSeleccion) {
                 const ultimaSeleccionObj = JSON.parse(ultimaSeleccion);
                 document.body.className = ultimaSeleccionObj.faccion.toLowerCase();
-                document.getElementById('result').innerHTML = `Facción: ${ultimaSeleccionObj.faccion}<br>Nombre: ${ultimaSeleccionObj.nombre}<br>Nave: ${ultimaSeleccionObj.nave}<br>Estilo de Juego: ${ultimaSeleccionObj.estiloJuego}`;
                 const historia = generarHistoria(ultimaSeleccionObj.faccion, ultimaSeleccionObj.nombre, ultimaSeleccionObj.nave, ultimaSeleccionObj.estiloJuego);
-                document.getElementById('story').innerHTML = `<h3>Historia del Personaje</h3>${historia}`;
+                document.getElementById('result').innerHTML = `${translations[getLanguage()]['Facción']}: ${ultimaSeleccionObj.faccion}<br>${translations[getLanguage()]['Nombre']}: ${ultimaSeleccionObj.nombre}<br>${translations[getLanguage()]['Nave']}: ${ultimaSeleccionObj.nave}<br>${translations[getLanguage()]['Estilo de Juego']}: ${ultimaSeleccionObj.estiloJuego}`;
+                document.getElementById('story').innerHTML = `<h3>${translations[getLanguage()]['Historia del Personaje']}</h3>${historia}`;
             }
         };
     </script>
