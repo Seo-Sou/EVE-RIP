@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EVE Online Selector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            transition: background-color 0.5s;
+        }
+        #result {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        #story-container {
+            background-color: #ffffff; /* Color de fondo para el contenedor de la historia */
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 10px; /* Bordes redondeados */
+        }
+        #story {
+            font-size: 16px;
+            color: #000000; /* Color del texto de la historia */
+        }
+
+        /* Estilos para cada facción */
+        .amarr {
+            background-color: #ffcc00; /* Amarillo */
+            color: #000000; /* Negro */
+        }
+
+        .caldari {
+            background-color: #003366; /* Azul oscuro */
+            color: #ffffff; /* Blanco */
+        }
+
+        .gallente {
+            background-color: #339933; /* Verde */
+            color: #000000; /* Negro */
+        }
+
+        .minmatar {
+            background-color: #cc0000; /* Rojo oscuro */
+            color: #ffffff; /* Blanco */
+        }
+    </style>
+</head>
+<body>
+    <h1>Selector de EVE Online</h1>
+    <button onclick="generarSeleccion()">Generar Selección</button>
+    <div id="result"></div>
+    <div id="story-container">
+        <div id="story"></div>
+    </div>
+
+    <script>
+        const facciones = ['Amarr', 'Caldari', 'Gallente', 'Minmatar'];
+        const nombres = ['jeremy', 'amarr', 'laurean', 'Delta', 'lizzy', 'homer', 'akshan', 'boris', 'gian', 'morty', 'slate', 'murphy', 'salasar'];
+        const navesCaldari = ['Cormorant', 'Caracal', 'Raven', 'Rokh'];
+        const navesAmarr = ['Punisher', 'Omen', 'Armageddon', 'Paladin'];
+        const navesGallente = ['Tristan', 'Vexor', 'Dominix', 'Megathron'];
+        const navesMinmatar = ['Slasher', 'Stabber', 'Typhoon', 'Naglfar'];
+        const nombresAdicionales = ['bomber', 'Sigma', 'Zeta', 'aldus', 'macael', 'Theta', 'thomas', 'Theta', 'naiz', 'Theta', 'mitani'];
+        const apellidos = ['Star', 'Nova', 'Cosmo', 'batan', 'omen', 'dombuldore', 'frodu', 'miler', 'snake', 'chuck', 'omen', 'stange', 'ecxel', 'marvel', 'jacksho'];
+        const estilosJuego = ['Pirata', 'Mission Runner', 'Factional Warfare Player', 'Industrial', 'Trader'];
+        const fragmentosHistoria = [
+            "Nacido en la majestuosa facción {facción},",
+            "Con un nombre conocido en toda la galaxia, {nombre},",
+            "Piloteando la nave {nave}, es temido por muchos.",
+            "Se destaca como {estiloJuego},",
+            "Ha explorado los confines del espacio, enfrentándose a desafíos inimaginables.",
+            "Conocido por su valentía y astucia, {nombre} es una leyenda entre los {facción}."
+        ];
+
+        function generarSeleccion() {
+            const faccionAleatoria = obtenerElementoAleatorio(facciones);
+            const nombreAleatorio = generarNombreAleatorio();
+            const naveAleatoria = obtenerNaveAleatoria(faccionAleatoria);
+            const estiloJuegoAleatorio = obtenerElementoAleatorio(estilosJuego);
+
+            const resultado = `Facción: ${faccionAleatoria}<br>Nombre: ${nombreAleatorio}<br>Nave: ${naveAleatoria}<br>Estilo de Juego: ${estiloJuegoAleatorio}`;
+            const historia = generarHistoria(faccionAleatoria, nombreAleatorio, naveAleatoria, estiloJuegoAleatorio);
+
+            // Guardar la última selección en localStorage
+            localStorage.setItem('ultimaSeleccion', JSON.stringify({
+                faccion: faccionAleatoria,
+                nombre: nombreAleatorio,
+                nave: naveAleatoria,
+                estiloJuego: estiloJuegoAleatorio
+            }));
+
+            // Aplicar estilos según la facción seleccionada
+            document.body.className = faccionAleatoria.toLowerCase();
+
+            document.getElementById('result').innerHTML = resultado;
+            document.getElementById('story').innerHTML = `<h3>Historia del Personaje</h3>${historia}`;
+        }
+
+        function generarNombreAleatorio() {
+            const nombrePrincipal = obtenerElementoAleatorio(nombres.concat(nombresAdicionales));
+            const apellidoAleatorio = obtenerElementoAleatorio(apellidos);
+            return `${nombrePrincipal} ${apellidoAleatorio}`;
+        }
+
+        function obtenerNaveAleatoria(faccion) {
+            switch (faccion) {
+                case 'Amarr':
+                    return obtenerElementoAleatorio(navesAmarr);
+                case 'Caldari':
+                    return obtenerElementoAleatorio(navesCaldari);
+                case 'Gallente':
+                    return obtenerElementoAleatorio(navesGallente);
+                case 'Minmatar':
+                    return obtenerElementoAleatorio(navesMinmatar);
+                default:
+                    return 'Desconocido';
+            }
+        }
+
+        function generarHistoria(faccion, nombre, nave, estiloJuego) {
+            const historiaGenerada = fragmentosHistoria.map(fragmento => {
+                return fragmento.replace('{facción}', faccion).replace('{nombre}', nombre).replace('{nave}', nave).replace('{estiloJuego}', estiloJuego);
+            });
+
+            return historiaGenerada.join(' ');
+        }
+
+        function obtenerElementoAleatorio(array) {
+            const indiceAleatorio = Math.floor(Math.random() * array.length);
+            return array[indiceAleatorio];
+        }
+
+        // Recuperar la última selección al cargar la página
+        window.onload = function () {
+            const ultimaSeleccion = localStorage.getItem('ultimaSeleccion');
+            if (ultimaSeleccion) {
+                const ultimaSeleccionObj = JSON.parse(ultimaSeleccion);
+                document.body.className = ultimaSeleccionObj.faccion.toLowerCase();
+                document.getElementById('result').innerHTML = `Facción: ${ultimaSeleccionObj.faccion}<br>Nombre: ${ultimaSeleccionObj.nombre}<br>Nave: ${ultimaSeleccionObj.nave}<br>Estilo de Juego: ${ultimaSeleccionObj.estiloJuego}`;
+                const historia = generarHistoria(ultimaSeleccionObj.faccion, ultimaSeleccionObj.nombre, ultimaSeleccionObj.nave, ultimaSeleccionObj.estiloJuego);
+                document.getElementById('story').innerHTML = `<h3>Historia del Personaje</h3>${historia}`;
+            }
+        };
+    </script>
+</body>
+</html>
